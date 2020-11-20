@@ -26,10 +26,6 @@ const WarnText = styled.span`
 `;
 
 export default class RandomChar extends Component {
-    constructor() {
-        super();
-        this.updateChar();
-    }
 
     gotService = new gotService();
 
@@ -37,6 +33,14 @@ export default class RandomChar extends Component {
         char: {},
         loading: true,
         error: false
+    }
+    componentDidMount() {
+        this.updateChar();
+        this.timerId = setInterval(this.updateChar, 4500);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerId);
     }
 
     onCharLoaded = (char) => {
@@ -51,7 +55,8 @@ export default class RandomChar extends Component {
             loading: false
         })
     }
-    updateChar() {
+    updateChar = () => {
+        console.log('updateChar')
         const id = Math.floor(Math.random() * 180 + 25); // 25 до 180
         this.gotService.getCharacter(id)
             .then(this.onCharLoaded)

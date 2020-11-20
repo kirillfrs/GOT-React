@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-// import './charDetails.css';
-
+import './charDetails.css';
+import GotService from '../../services/gotServices';
+import Spinner from '../spinner';
 import styled from 'styled-components';
 import { WarnText } from '../randomChar/randomChar'
+import ErrorMessage from '../errorMessage';
+
 
 const CharDetailsWrapper = styled.div`
 margin-top:40px;
@@ -52,27 +55,91 @@ position: relative;
 
 
 export default class CharDetails extends Component {
+    gotServices = new GotService();
+    state = {
+        char: null,
+        loading: true,
+        error: false
+    }
+
+    componentDidMount() {
+        this.updateChar();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.charId !== prevProps.charId) {
+            this.updateChar();
+        }
+    }
+    onCharDetailsLoaded = (char) => {
+        this.setState({
+            char,
+            loading: false
+        })
+    }
+    onError = () => {
+        this.setState({
+            char: null,
+            error: true
+        })
+    }
+
+    updateChar = () => {
+        const { charId } = this.props;
+        if (!charId) {
+            return;
+        }
+        this.setState({
+            loading: true
+        })
+        this.gotServices.getCharacter(charId)
+            .then(this.onCharDetailsLoaded)
+            .catch(() => this.onError)
+    }
+
 
     render() {
+
+        if (!this.state.char && this.state.error) {
+            return <ErrorMessage />
+        } else if (!this.state.char) {
+            return (
+                <>
+                    <span className="select-error">Please select a character</span>
+                </>)
+        }
+
+
+        const { name, gender, born, died, culture } = this.state.char;
+
+        if (this.state.loading) {
+            return (
+                <CharDetailsWrapper>
+                    <Spinner />
+                </CharDetailsWrapper>
+            )
+        }
+
+
         return (
             <CharDetailsWrapper>
-                <h4>John Snow</h4>
+                <h4>{name}</h4>
                 <ListGroup >
                     <ListGroupItem >
                         <WarnText>Gender</WarnText>
-                        <span>male</span>
+                        <span>{gender}</span>
                     </ListGroupItem>
                     <ListGroupItem >
                         <WarnText>Born</WarnText>
-                        <span>1783</span>
+                        <span>{born}</span>
                     </ListGroupItem>
                     <ListGroupItem >
                         <WarnText>Died</WarnText>
-                        <span>1820</span>
+                        <span>{died}</span>
                     </ListGroupItem>
                     <ListGroupItem >
                         <WarnText>Culture</WarnText>
-                        <span>First</span>
+                        <span>{culture}</span>
                     </ListGroupItem>
                 </ListGroup>
             </CharDetailsWrapper>
