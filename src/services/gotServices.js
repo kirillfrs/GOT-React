@@ -10,28 +10,62 @@ export default class GotService {
 
         return await res.json();
     }
-    getAllCharacters() {
-        return this.getResources('/characters?page=5&pageSize=10');
+    async getAllCharacters() {
+        const res = await this.getResources('/characters?page=5&pageSize=10');
+        return res.map(this._transformCharacter);
     }
 
-    getCharacter(id) {
-        return this.getResources(`/characters/${id}`);
+    async getCharacter(id) {
+        const character = await this.getResources(`/characters/${id}`);
+        return this._transformCharacter(character);
     }
 
-    getAllHouses() {
-        return this.getResources('/houses/');
+    async getAllHouses() {
+        const houses = await this.getResources('/houses/');
+        return houses.map(this._transformHouse);
     }
 
-    getHouse(id) {
-        return this.getResources(`/houses/${id}`);
+    async getHouse(id) {
+        const house = await this.getResources(`/houses/${id}`);
+        return this._transformHouse(house);
     }
-   
-    getAllBooks() {
-        return this.getResources(`/books/`);
-    }
-    getBook(id) {
-        return this.getResources(`/books/${id}/`);
-    }
-    
 
+    async getAllBooks() {
+        const books = await this.getResources(`/books/`);
+        return books.map(this._transformBook);
+    }
+    async getBook(id) {
+        const book = await this.getResources(`/books/${id}/`);
+        return this._transformBook(book);
+    }
+
+    _transformCharacter(char) {
+        return {
+            name: char.name,
+            gender: char.gender || ' no-data',
+            born: char.born || 'no-data',
+            died: char.died || 'no-data',
+            culture: char.culture || 'no-data'
+        }
+    }
+
+    _transformHouse(house) {
+        return {
+            name: house.name,
+            region: house.region,
+            words: house.words,
+            titles: house.titles,
+            overlord: house.overlord,
+            ancestralWeapons: house.ancestralWeapons
+        };
+    }
+
+    _transformBook(book) {
+        return {
+            name: book.name,
+            numberOfPages: book.numberOfPages,
+            publiser: book.publiser,
+            released: book.released
+        };
+    }
 }
