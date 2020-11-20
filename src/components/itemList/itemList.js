@@ -1,16 +1,18 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 // import './itemList.css';
-import {ListGroup,ListGroupItem} from '../charDetails/charDetails'
+import { ListGroup, ListGroupItem } from '../charDetails/charDetails'
 import styled from 'styled-components';
 
-
-const ItemListPoint=styled(ListGroupItem)`cursor: pointer;`;
+const ListGroupModifyed = styled(ListGroup)`
+margin-top:40px;
+`;
+const ItemListPoint = styled(ListGroupItem)`cursor: pointer;`;
 
 export default class ItemList extends Component {
 
     render() {
         return (
-            <ListGroup >
+            <ListGroupModifyed >
                 <ItemListPoint >
                     John Snow
                 </ItemListPoint>
@@ -20,7 +22,7 @@ export default class ItemList extends Component {
                 <ItemListPoint>
                     Geremy
                 </ItemListPoint>
-            </ListGroup>
+            </ListGroupModifyed>
         );
     }
 }

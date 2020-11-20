@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 // import './charDetails.css';
 
 import styled from 'styled-components';
-import {WarnText} from '../randomChar/randomChar'
+import { WarnText } from '../randomChar/randomChar'
 
 const CharDetailsWrapper = styled.div`
+margin-top:40px;
   background-color: #fff;
     padding: 25px 25px 15px 25px;
     margin-bottom: 40px;
@@ -79,4 +80,4 @@ export default class CharDetails extends Component {
     }
 }
 
-export {ListGroup,ListGroupItem};
+export { ListGroup, ListGroupItem };
