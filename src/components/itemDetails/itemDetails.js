@@ -53,64 +53,75 @@ position: relative;
   }
 `;
 
+const Field = ({ item, field, label }) => {
+    return (
+        <ListGroupItem >
+            <WarnText>{label}</WarnText>
+            <span>{item[field]}</span>
+        </ListGroupItem>
+    )
+}
+export { Field };
 
 export default class CharDetails extends Component {
     gotServices = new GotService();
     state = {
-        char: null,
+        item: null,
         loading: true,
         error: false
     }
 
     componentDidMount() {
-        this.updateChar();
+        this.updateItem();
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
+        if (this.props.itemId !== prevProps.itemId) {
+            this.updateItem();
         }
     }
-    onCharDetailsLoaded = (char) => {
+    onItemDetailsLoaded = (item) => {
         this.setState({
-            char,
+            item,
             loading: false
         })
     }
     onError = () => {
         this.setState({
-            char: null,
+            item: null,
             error: true
         })
     }
 
-    updateChar = () => {
-        const { charId } = this.props;
-        if (!charId) {
+    updateItem = () => {
+        const { itemId, getData } = this.props;
+        if (!itemId) {
             return;
         }
         this.setState({
             loading: true
         })
-        this.gotServices.getCharacter(charId)
-            .then(this.onCharDetailsLoaded)
+       
+
+            getData(itemId)
+            .then(this.onItemDetailsLoaded)
             .catch(() => this.onError)
     }
 
 
     render() {
 
-        if (!this.state.char && this.state.error) {
+        if (!this.state.item && this.state.error) {
             return <ErrorMessage />
-        } else if (!this.state.char) {
+        } else if (!this.state.item) {
             return (
                 <>
-                    <span className="select-error">Please select a character</span>
+                    <span className="select-error">Please select item in the list</span>
                 </>)
         }
 
-
-        const { name, gender, born, died, culture } = this.state.char;
+        const { item } = this.state;
+        const { name } = item;
 
         if (this.state.loading) {
             return (
@@ -125,22 +136,11 @@ export default class CharDetails extends Component {
             <CharDetailsWrapper>
                 <h4>{name}</h4>
                 <ListGroup >
-                    <ListGroupItem >
-                        <WarnText>Gender</WarnText>
-                        <span>{gender}</span>
-                    </ListGroupItem>
-                    <ListGroupItem >
-                        <WarnText>Born</WarnText>
-                        <span>{born}</span>
-                    </ListGroupItem>
-                    <ListGroupItem >
-                        <WarnText>Died</WarnText>
-                        <span>{died}</span>
-                    </ListGroupItem>
-                    <ListGroupItem >
-                        <WarnText>Culture</WarnText>
-                        <span>{culture}</span>
-                    </ListGroupItem>
+                    {
+                        React.Children.map(this.props.children, (child) => {
+                            return React.cloneElement(child, { item });
+                        })
+                    }
                 </ListGroup>
             </CharDetailsWrapper>
         );

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 // import './itemList.css';
-import { ListGroup, ListGroupItem } from '../charDetails/charDetails'
+import { ListGroup, ListGroupItem } from '../itemDetails/itemDetails'
 import styled from 'styled-components';
-import GotService from '../../services/gotServices';
 import Spinner from '../spinner';
+import PropTypes from 'prop-types';
 
 const ListGroupModifyed = styled(ListGroup)`
 margin-top:40px;
@@ -11,39 +11,42 @@ margin-top:40px;
 const ItemListPoint = styled(ListGroupItem)`cursor: pointer;`;
 
 export default class ItemList extends Component {
-    gotServices = new GotService();
     state = {
-        charList: null
+        itemList: null
     }
 
     componentDidMount() {
-        this.gotServices.getAllCharacters()
-            .then((charList) => {
-                this.setState({ charList })
+        const { getData } = this.props;
+
+        getData()
+            .then((itemList) => {
+                this.setState({ itemList })
             })
     }
 
     renderItems(arr) {
-        
-        return arr.map((item, i,arr) => {
+
+        return arr.map((item) => {
+            const { id } = item;
+            const label = this.props.renderItem(item);
             return (
                 <ItemListPoint
-                    onClick={() => this.props.onCharSelected(41 + i)}
-                    key={i} >
-                    {item.name}
+                    onClick={() => this.props.onItemSelected(id)}
+                    key={id} >
+                    {label}
                 </ItemListPoint>
             )
         })
     }
 
     render() {
-        const { charList } = this.state;
+        const { itemList } = this.state;
 
-        if (!charList) {
+        if (!itemList) {
             return <Spinner />
         }
 
-        const items = this.renderItems(charList)
+        const items = this.renderItems(itemList)
 
         return (
             <ListGroupModifyed >
@@ -51,4 +54,8 @@ export default class ItemList extends Component {
             </ListGroupModifyed>
         );
     }
+}
+
+ItemList.PropTypes = {
+    onItemSelected: PropTypes.func,
 }
